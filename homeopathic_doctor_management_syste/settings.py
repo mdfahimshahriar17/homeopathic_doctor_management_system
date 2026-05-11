@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'templates'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,6 +45,9 @@ INSTALLED_APPS = [
     'inventory',
     'users',
 ]
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
