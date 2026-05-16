@@ -1,5 +1,5 @@
 """
-URL configuration for homeopathic_doctor_management_syste project.
+URL configuration for homeopathic project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -15,14 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('patients/', include('patients.urls')),
-    # path('appointments/', include('appointments.urls')),
-    # path('prescriptions/', include('prescriptions.urls')),
-    # path('finance/', include('finance.urls')),
-    # path('inventory/', include('inventory.urls')),
-    # path('users/', include('users.urls')),
 ]

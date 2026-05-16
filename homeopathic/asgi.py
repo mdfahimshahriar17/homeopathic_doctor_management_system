@@ -1,5 +1,5 @@
 """
-ASGI config for homeopathic_doctor_management_syste project.
+ASGI config for homeopathic project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'homeopathic_doctor_management_syste.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'homeopathic.settings')
 
 application = get_asgi_application()
