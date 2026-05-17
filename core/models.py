@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-class Patient(models.model):
+
+class Patient(models.Model):
     #Gender choices
     GENDER_CHOICES = (('M', 'Male'), ('F', 'Female'))
 
@@ -15,7 +16,4 @@ class Patient(models.model):
 
 
     def __str__(self):
-        return f'{self.name} (ID: {self.display_id})'
-
-  
-    
+        return f'{self.name} (ID: {self.id})'
