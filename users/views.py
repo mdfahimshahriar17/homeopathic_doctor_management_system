@@ -27,3 +27,6 @@ def user_login(request):
     
     return render(request, 'users/users_auth_form.html', {'form' : form})
 
+def user_logout(request):
+    logout(request)
+    return redirect('home')
