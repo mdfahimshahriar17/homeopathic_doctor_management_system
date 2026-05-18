@@ -26,3 +26,15 @@ def patient_list(request):
 def patient_details(request, id):
     patient = get_object_or_404(models.Patient, id=id)
     return render(request, 'core/patien_details.html', {'patient' : patient})
+
+
+def edit_patient(request, id):
+    patient = models.Patient.objects.get(id=id)
+    form = forms.PatientForm(instance=patient) #patient previous data will show in form
+
+    if request.method == 'POST':
+        form = forms.PatientForm(request.POST, instance=patient) #captured the user request post
+        if form.is_valid():
+            form.save()
+            return redirect('patient_details', id=patient.id)
+    return render(request, 'core/create_and_edit_patient.html', {'form': form, 'update': True})
