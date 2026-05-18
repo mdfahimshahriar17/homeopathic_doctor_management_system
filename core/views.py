@@ -20,3 +20,5 @@ def patient_list(request):
     patients = models.Patient.objects.all()
 
     return render(request, 'core/patient_list.html', {'patients' : patients})
+
+
