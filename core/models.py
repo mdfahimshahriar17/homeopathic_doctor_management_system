@@ -17,3 +17,21 @@ class Patient(models.Model):
 
     def __str__(self):
         return f'{self.name} (ID: {self.id})'
+    
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    ]
+
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    appointment_date = models.DateTimeField(auto_now_add=True)
+    serial_num = models.IntegerField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+
+    def __str__(self):
+        return f"{self.patient.name} - Serial {self.serial_num}"

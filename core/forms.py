@@ -11,3 +11,12 @@ class PatientForm(forms.ModelForm):
             'name': "Full Name",
             'gender': "Select Gender",
         }
+
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = models.Appointment
+        fields = ['patient']
+        labels = {
+            'patient': 'Select Patient'
+        }
