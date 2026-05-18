@@ -3,7 +3,11 @@
 {% block content%}
 
 <div class="container">
-    <h1>Register Patient</h1>
+    {% if edit %}
+        <h1>Register Patient</h1>
+    {% else %}
+        <h1>Edit Patient</h1>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{form | crispy}}

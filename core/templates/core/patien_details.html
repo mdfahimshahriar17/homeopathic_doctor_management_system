@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h1 class="py-3 container">Patient Details</h1>
+    <div class="card" style="width: 18rem;">
+    <div class="card-header">
+        Name: {{ patient.name }}
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Age: {{ patient.age }}</li>
+        <li class="list-group-item">Gender: {{ patient.gender }}</li>
+        <li class="list-group-item">Phone: {{ patient.phone }}</li>
+        <li class="list-group-item">Address: {{ patient.address }}</li>
+        <li class="list-group-item">Join Date: {{ patient.created_at }}</li>
+    </ul>
+    </div>
+</div>
+{% endblock  %}
