@@ -184,3 +184,9 @@ def medicine_details(request, id):
     medicine = get_object_or_404(models.Medicine, id=id)
     return render (request, 'core/medicine_details.html')
 
+
+
+def medicine_list(request):
+    medicines = models.Medicine.objects.all()
+
+    return render(request, 'core/medicine_list.html', {'medicines':medicines})
