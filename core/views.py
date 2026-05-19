@@ -190,3 +190,17 @@ def medicine_list(request):
     medicines = models.Medicine.objects.all()
 
     return render(request, 'core/medicine_list.html', {'medicines':medicines})
+
+
+def medicine_edit(request, id):
+    medicine = get_object_or_404(models.Medicine, id=id)
+    form = forms.MedicineForm(instance=medicine) #medicine previous data will show in form
+
+    if request.method == 'POST':
+        form = forms.MedicineForm(request.POST, instance=medicine) #captured the user request post
+        if form.is_valid():
+            form.save()
+            return redirect('medicine_details', id=medicine.id)
+    
+    return render(request, 'core/created_and_edit_medicine', {'form':form})
+
