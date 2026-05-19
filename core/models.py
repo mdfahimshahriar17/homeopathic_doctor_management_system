@@ -63,3 +63,27 @@ class Medicine(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+
+class Prescription(models.Model):
+    visit = models.OneToOneField(Visit, on_delete=models.CASCADE, related_name='prescription')
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prescription - {self.patient.name} - {self.created_at}"
+
+class PrescriptionItem(models.Model):
+    prescriction = models.ForeignKey(Prescription, on_delete=models.CASCADE, related_name='item')
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    potency = models.CharField(max_length=50, null=True, blank=True)
+    dosage = models.CharField(max_length=100)
+    duration = models.CharField(max_length=100, blank=True, null=True)
+    instruction = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.medicine.name} - {self.prescriction.patient.name}"
