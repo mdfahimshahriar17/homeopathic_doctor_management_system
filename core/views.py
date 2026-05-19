@@ -165,6 +165,7 @@ def create_visit(request, id):
 
 
 
+@login_required
 def create_medicine(request):
     if request.method == 'POST':
         form = forms.MedicineForm(request.POST)
@@ -177,7 +178,7 @@ def create_medicine(request):
     else:
         form = forms.MedicineForm()
 
-    return render(request, 'core/created_and_edit_medicine', {'form' : form})
+    return render(request, 'core/created_and_edit_medicine.html', {'form' : form})
 
 
 def medicine_details(request, id):
@@ -202,7 +203,7 @@ def medicine_edit(request, id):
             form.save()
             return redirect('medicine_details', id=medicine.id)
     
-    return render(request, 'core/created_and_edit_medicine', {'form':form})
+    return render(request, 'core/created_and_edit_medicine.html', {'form':form})
 
 
 def medicine_search(request):

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content%}
+
+<div class="container">
+    {% if edit %}
+        <h1>Register Medicine</h1>
+    {% else %}
+        <h1>Edit Medicine</h1>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{form | crispy}}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+{% endblock  %}
