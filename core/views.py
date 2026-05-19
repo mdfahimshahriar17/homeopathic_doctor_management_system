@@ -3,6 +3,7 @@ from django.db.models import Max #aggregate function to get max
 from django.utils import timezone #for select time zone
 from django.db.models import Q #For query in models
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse #For ajax
 from . import forms
 from . import models
 
@@ -220,3 +221,5 @@ def medicine_search(request):
             medicines = medicines | models.Medicine.objects.filter(id=query)
     
     return render(request, 'core/medicine_search.html', {'query': query, 'medicines': medicines})
+
+

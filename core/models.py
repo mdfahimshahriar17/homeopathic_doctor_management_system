@@ -79,7 +79,10 @@ class Prescription(models.Model):
 
 class PrescriptionItem(models.Model):
     prescriction = models.ForeignKey(Prescription, on_delete=models.CASCADE, related_name='item')
-    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True, blank=True)
+    
+    # Stock/list e na thaka medicine
+    custom_medicine_name = models.CharField(max_length=150,blank=True,null=True)
     potency = models.CharField(max_length=50, null=True, blank=True)
     dosage = models.CharField(max_length=100)
     duration = models.CharField(max_length=100, blank=True, null=True)
