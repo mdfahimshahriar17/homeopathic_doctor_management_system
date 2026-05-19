@@ -204,3 +204,18 @@ def medicine_edit(request, id):
     
     return render(request, 'core/created_and_edit_medicine', {'form':form})
 
+
+def medicine_search(request):
+    query = request.GET.get('q', '')
+    medicines = []
+
+    if query:
+        medicines = models.Medicine.objects.filter(
+            Q(name__incontains=query) |
+            Q(description__incontains=query)
+        )
+
+        if query.isdigit():
+            medicines = medicines | models.Medicine.objects.filter(id=query)
+    
+    return render(request, 'core/medicine_search', {'query': query, 'medicines': medicines})
