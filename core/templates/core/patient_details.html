@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h1 class="mb-4">Patient Details</h1>
+
+    <div class="row">
+
+        <!-- Left Side: Patient Info - Everyone can see this -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Name: {{ patient.name }}</li>
+                    <li class="list-group-item">ID: {{ patient.id }}</li>
+                    <li class="list-group-item">Age: {{ patient.age }}</li>
+                    <li class="list-group-item">Gender: {{ patient.gender }}</li>
+                    <li class="list-group-item">Phone: {{ patient.phone }}</li>
+                    <li class="list-group-item">Address: {{ patient.address }}</li>
+                    <li class="list-group-item">Join Date: {{ patient.created_at }}</li>
+                </ul>
+
+                <div class="card-footer text-end">
+
+                    {% if user.role == 'doctor' %}
+
+                        {% if today_appointment %}
+                            <a class="btn btn-primary btn-sm mx-1" href="{% url 'create_visit' today_appointment.id %}">
+                                Visit
+                            </a>
+                        {% else %}
+                            <form method="POST" action="{% url 'create_appointment' patient.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit" class="btn btn-success btn-sm mx-1">
+                                    Book Appointment
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        <a class="btn btn-dark btn-sm mx-1" href="{% url 'edit_patient' patient.id %}">
+                            Edit
+                        </a>
+
+                    {% elif user.role == 'compounder' or user.role == 'receptionist' %}
+
+                        {% if today_appointment %}
+                            <button class="btn btn-secondary btn-sm mx-1" disabled>
+                                Appointed
+                            </button>
+                        {% else %}
+                            <form method="POST" action="{% url 'create_appointment' patient.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit" class="btn btn-success btn-sm mx-1">
+                                    Book Appointment
+                                </button>
+                            </form>
+                        {% endif %}
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+
+        {% if user.role == 'doctor' %}
+        <!-- Right Side: History - Only doctor can see this -->
+        <div class="col-md-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Visit & Medicine History</h3>
+
+                <form method="GET" class="d-flex">
+                    <input 
+                        type="date" 
+                        name="history_date" 
+                        class="form-control me-2"
+                        value="{{ history_date|default:'' }}"
+                    >
+                    <button type="submit" class="btn btn-dark btn-sm">
+                        Filter
+                    </button>
+                    <a href="{% url 'patient_details' patient.id %}" class="btn btn-secondary btn-sm ms-2">
+                        Clear
+                    </a>
+                </form>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <strong>Last Visited Dates</strong>
+                </div>
+
+                <div class="card-body">
+                    {% if visit_dates %}
+                        {% for date in visit_dates %}
+                            <a href="{% url 'patient_details' patient.id %}?history_date={{ date|date:'Y-m-d' }}" 
+                               class="btn btn-outline-dark btn-sm mb-2 me-1">
+                                {{ date|date:"M d, Y" }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">No previous visit date found.</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% for history in histories %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-dark text-white">
+                        Visit Date: {{ history.visit.created_at }}
+                    </div>
+
+                    <div class="card-body">
+                        <p>
+                            <strong>Symptoms:</strong>
+                            {{ history.visit.symptoms }}
+                        </p>
+
+                        {% if history.visit.notes %}
+                        <p>
+                            <strong>Notes:</strong>
+                            {{ history.visit.notes }}
+                        </p>
+                        {% endif %}
+
+                        <hr>
+
+                        <h6>Prescribed Medicines</h6>
+
+                        {% if history.items %}
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th>Potency</th>
+                                        <th>Dosage</th>
+                                        <th>Duration</th>
+                                        <th>Instruction</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for item in history.items %}
+                                    <tr>
+                                        <td>
+                                            {% if item.medicine %}
+                                                {{ item.medicine.name }}
+                                            {% else %}
+                                                {{ item.custom_medicine_name }}
+                                                <span class="badge bg-warning text-dark">Not in list</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.potency|default:"-" }}</td>
+                                        <td>{{ item.dosage }}</td>
+                                        <td>{{ item.duration|default:"-" }}</td>
+                                        <td>{{ item.instruction|default:"-" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="text-muted">No prescription added for this visit.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% empty %}
+                <div class="alert alert-info">
+                    No visit history found.
+                </div>
+            {% endfor %}
+
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock content %}

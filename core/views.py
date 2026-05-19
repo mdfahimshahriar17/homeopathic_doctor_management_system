@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Max #aggregate function to get max
+from django.db.models import Max, Sum, Count #aggregate function
 from django.utils import timezone #for select time zone
 from django.db.models import Q #For query in models
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse #For ajax
+from django.utils.dateparse import parse_date
 from . import forms
 from . import models
 
@@ -38,7 +39,51 @@ def patient_details(request, id):
         patient=patient,
         appointment_date__date=today
     ).exclude(status='Cancelled').first()
-    return render(request, 'core/patien_details.html', {'patient' : patient, 'today_appointment':today_appointment})
+
+    histories = []
+    visit_dates = []
+    history_date = request.GET.get('history_date', '')
+
+    if request.user.role == 'doctor':
+        visit_dates = models.Visit.objects.filter(
+            patient=patient
+        ).dates(
+            'created_at',
+            'day',
+            order='DESC'
+        )
+
+        visits = models.Visit.objects.filter(
+            patient=patient
+        ).select_related(
+            'appointment',
+            'created_by'
+        ).order_by('-created_at')
+
+        if history_date:
+            visits = visits.filter(created_at__date=history_date)
+
+        for visit in visits:
+            try:
+                prescription = visit.prescription
+                items = prescription.items.all()
+            except models.Prescription.DoesNotExist:
+                prescription = None
+                items = []
+
+            histories.append({
+                'visit': visit,
+                'prescription': prescription,
+                'items': items,
+            })
+
+    return render(request, 'core/patient_details.html', {
+        'patient': patient,
+        'today_appointment': today_appointment,
+        'histories': histories,
+        'visit_dates': visit_dates,
+        'history_date': history_date,
+    })
 
 
 @login_required
@@ -299,3 +344,293 @@ def create_prescription(request, id):
         'form': form,
         'items': items,
     })
+
+
+
+@login_required
+def create_fee(request, id):
+    prescription = get_object_or_404(models.Prescription, id=id)
+
+    existing_fee = models.Fee.objects.filter(prescription=prescription).first()
+
+    if existing_fee:
+        return redirect('compounder_queue')
+
+    if request.method == 'POST':
+        form = forms.FeeForm(request.POST)
+
+        if form.is_valid():
+            fee = form.save(commit=False)
+            fee.prescription = prescription
+            fee.visit = prescription.visit
+            fee.patient = prescription.patient
+            fee.appointment = prescription.appointment
+            fee.created_by = request.user
+            fee.save()
+
+            return redirect('doctor_dashboard')
+
+    else:
+        form = forms.FeeForm()
+
+    return render(request, 'core/fee_form.html', {
+        'form': form,
+        'prescription': prescription,
+        'patient': prescription.patient,
+        'visit': prescription.visit,
+    })
+
+
+@login_required
+def compounder_queue(request):
+    fees = models.Fee.objects.select_related(
+        'patient', 'prescription', 'appointment'
+    ).exclude(
+        appointment__status='Completed'
+    ).order_by('created_at')
+
+    return render(request, 'core/compounder_queue.html', {
+        'fees': fees
+    })
+
+
+@login_required
+def complete_medicine_preparation(request, id):
+    fee = get_object_or_404(models.Fee, id=id)
+
+    if request.method == 'POST':
+        appointment = fee.appointment
+        appointment.status = 'Completed'
+        appointment.save()
+
+    return redirect('compounder_queue')
+
+
+
+@login_required
+def home(request):
+    if request.user.role == 'compounder':
+        return redirect('compounder_dashboard')
+
+    elif request.user.role == 'doctor':
+        return redirect('doctor_dashboard')
+
+    elif request.user.role == 'receptionist':
+        return redirect('receptionist_dashboard')
+
+    return redirect('patient_search')
+
+@login_required
+def compounder_dashboard(request):
+    today = timezone.localdate()
+
+    pending_fees = models.Fee.objects.select_related(
+        'patient',
+        'prescription',
+        'appointment'
+    ).prefetch_related(
+        'prescription__items__medicine'
+    ).filter(
+        is_paid=False
+    ).exclude(
+        appointment__status='Completed'
+    ).order_by('created_at')
+
+    completed_today_count = models.Fee.objects.filter(
+        is_paid=True,
+        paid_at__date=today
+    ).count()
+
+    today_cash = models.Fee.objects.filter(
+        is_paid=True,
+        paid_at__date=today
+    ).aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+
+    pending_count = pending_fees.count()
+
+    return render(request, 'core/compounder_dashboard.html', {
+        'pending_fees': pending_fees,
+        'pending_count': pending_count,
+        'completed_today_count': completed_today_count,
+        'today_cash': today_cash,
+    })
+
+@login_required
+def compounder_prescription_detail(request, id):
+    fee = get_object_or_404(
+        models.Fee.objects.select_related(
+            'patient',
+            'prescription',
+            'appointment',
+            'visit'
+        ).prefetch_related(
+            'prescription__items__medicine'
+        ),
+        id=id
+    )
+
+    items = fee.prescription.items.all()
+
+    return render(request, 'core/compounder_prescription_detail.html', {
+        'fee': fee,
+        'patient': fee.patient,
+        'prescription': fee.prescription,
+        'items': items,
+    })
+
+@login_required
+def complete_medicine_preparation(request, id):
+    fee = get_object_or_404(models.Fee, id=id)
+
+    if request.method == 'POST':
+        fee.is_paid = True
+        fee.paid_at = timezone.now()
+        fee.collected_by = request.user
+        fee.save()
+
+        appointment = fee.appointment
+        appointment.status = 'Completed'
+        appointment.save()
+
+        return redirect('compounder_dashboard')
+
+    return redirect('compounder_dashboard')
+
+
+
+@login_required
+def doctor_dashboard(request):
+    today = timezone.localdate()
+
+    selected_date_str = request.GET.get('date')
+    selected_date = parse_date(selected_date_str) if selected_date_str else today
+
+    if selected_date is None:
+        selected_date = today
+
+    # Appointment status auto update for old pending appointments
+    models.Appointment.objects.filter(
+        appointment_date__date__lt=today,
+        status='Pending'
+    ).update(status='Cancelled')
+
+    total_patients = models.Patient.objects.count()
+
+    today_appointments = models.Appointment.objects.filter(
+        appointment_date__date=today
+    ).select_related('patient').order_by('serial_num')
+
+    total_today_appointments = today_appointments.count()
+    pending_appointments = today_appointments.filter(status='Pending').count()
+    in_visit_appointments = today_appointments.filter(status='In Visit').count()
+    completed_appointments = today_appointments.filter(status='Completed').count()
+    cancelled_appointments = today_appointments.filter(status='Cancelled').count()
+
+    lifetime_earning = models.Fee.objects.filter(
+        is_paid=True
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    today_earning = models.Fee.objects.filter(
+        is_paid=True,
+        paid_at__date=today
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    selected_date_earning = models.Fee.objects.filter(
+        is_paid=True,
+        paid_at__date=selected_date
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    today_medicine_count = models.PrescriptionItem.objects.filter(
+        prescription__fee__is_paid=True,
+        prescription__fee__paid_at__date=today
+    ).count()
+
+    selected_date_medicine_count = models.PrescriptionItem.objects.filter(
+        prescription__fee__is_paid=True,
+        prescription__fee__paid_at__date=selected_date
+    ).count()
+
+    not_in_list_medicines_today = models.PrescriptionItem.objects.filter(
+        prescription__fee__is_paid=True,
+        prescription__fee__paid_at__date=today,
+        medicine__isnull=True
+    ).exclude(
+        custom_medicine_name__isnull=True
+    ).exclude(
+        custom_medicine_name=''
+    ).order_by('-id')[:10]
+
+    zero_fee_prescription_count = models.Fee.objects.filter(
+    is_paid=True,
+    paid_at__date=today,
+    amount=0
+    ).count()
+
+    selected_date_zero_fee_prescription_count = models.Fee.objects.filter(
+    is_paid=True,
+    paid_at__date=selected_date,
+    amount=0
+    ).count()
+
+    return render(request, 'core/doctor_dashboard.html', {
+        'today': today,
+        'selected_date': selected_date,
+
+        'total_patients': total_patients,
+        'today_appointments': today_appointments,
+        'total_today_appointments': total_today_appointments,
+
+        'pending_appointments': pending_appointments,
+        'in_visit_appointments': in_visit_appointments,
+        'completed_appointments': completed_appointments,
+        'cancelled_appointments': cancelled_appointments,
+
+        'lifetime_earning': lifetime_earning,
+        'today_earning': today_earning,
+        'selected_date_earning': selected_date_earning,
+
+        'today_medicine_count': today_medicine_count,
+        'selected_date_medicine_count': selected_date_medicine_count,
+
+        'not_in_list_medicines_today': not_in_list_medicines_today,
+        
+        'zero_fee_prescription_count': zero_fee_prescription_count,
+
+        'selected_date_zero_fee_prescription_count': selected_date_zero_fee_prescription_count,
+    })
+
+
+
+@login_required
+def receptionist_dashboard(request):
+    today = timezone.localdate()
+
+    # Old pending appointments auto cancelled
+    models.Appointment.objects.filter(
+        appointment_date__date__lt=today,
+        status='Pending'
+    ).update(status='Cancelled')
+
+    today_appointments = models.Appointment.objects.filter(
+        appointment_date__date=today
+    ).select_related('patient').order_by('serial_num')
+
+    total_today_appointments = today_appointments.count()
+    pending_appointments = today_appointments.filter(status='Pending').count()
+    in_visit_appointments = today_appointments.filter(status='In Visit').count()
+    completed_appointments = today_appointments.filter(status='Completed').count()
+    cancelled_appointments = today_appointments.filter(status='Cancelled').count()
+
+    return render(request, 'core/receptionist_dashboard.html', {
+        'today': today,
+        'today_appointments': today_appointments,
+        'total_today_appointments': total_today_appointments,
+        'pending_appointments': pending_appointments,
+        'in_visit_appointments': in_visit_appointments,
+        'completed_appointments': completed_appointments,
+        'cancelled_appointments': cancelled_appointments,
+    })
+
+

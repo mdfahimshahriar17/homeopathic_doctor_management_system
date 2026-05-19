@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Prescription Detail</h1>
+        <a href="{% url 'compounder_dashboard' %}" class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+    <!-- Patient and Fee Info -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            Patient Information
+        </div>
+
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ patient.name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+            <p><strong>Phone:</strong> {{ patient.phone }}</p>
+            <p><strong>Serial No:</strong> {{ fee.appointment.serial_num }}</p>
+            <p><strong>Fee:</strong> {{ fee.amount }} Tk</p>
+
+            {% if fee.note %}
+                <p><strong>Fee Note:</strong> {{ fee.note }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Medicine Details -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            Medicine List
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Potency</th>
+                        <th>Dosage</th>
+                        <th>Duration</th>
+                        <th>Instruction</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {% if item.medicine %}
+                                {{ item.medicine.name }}
+                            {% else %}
+                                {{ item.custom_medicine_name }}
+                                <span class="badge bg-warning text-dark">Not in stock/list</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ item.potency|default:"-" }}</td>
+                        <td>{{ item.dosage }}</td>
+                        <td>{{ item.duration|default:"-" }}</td>
+                        <td>{{ item.instruction|default:"-" }}</td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            No medicine found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Complete Button -->
+    {% if not fee.is_paid %}
+    <form method="POST" action="{% url 'complete_medicine_preparation' fee.id %}" class="text-end">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">
+            Cash Received & Completed
+        </button>
+    </form>
+    {% else %}
+        <div class="alert alert-success">
+            This medicine preparation is already completed.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

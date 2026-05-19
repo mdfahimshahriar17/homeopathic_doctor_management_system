@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Doctor Dashboard</h1>
+            <p class="text-muted mb-0">Today: {{ today }}</p>
+        </div>
+
+        <form method="GET" class="d-flex">
+            <input 
+                type="date" 
+                name="date" 
+                class="form-control me-2"
+                value="{{ selected_date|date:'Y-m-d' }}"
+            >
+            <button type="submit" class="btn btn-dark">
+                Check
+            </button>
+        </form>
+    </div>
+
+    <!-- Main Summary -->
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Patients</h6>
+                    <h2 class="mb-0">{{ total_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-info">
+                <div class="card-body">
+                    <h6 class="text-muted">Today Appointments</h6>
+                    <h2 class="mb-0">{{ total_today_appointments }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">Today Earning</h6>
+                    <h2 class="mb-0">{{ today_earning }} Tk</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-dark">
+                <div class="card-body">
+                    <h6 class="text-muted">Lifetime Earning</h6>
+                    <h2 class="mb-0">{{ lifetime_earning }} Tk</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Status Summary -->
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending</h6>
+                    <h3 class="mb-0">{{ pending_appointments }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h6 class="text-muted">In Visit</h6>
+                    <h3 class="mb-0">{{ in_visit_appointments }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">Completed</h6>
+                    <h3 class="mb-0">{{ completed_appointments }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body">
+                    <h6 class="text-muted">Cancelled</h6>
+                    <h3 class="mb-0">{{ cancelled_appointments }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Date Wise + Medicine Summary -->
+    <div class="row mb-4">
+
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    Date-wise Summary
+                </div>
+
+                <div class="card-body">
+                    <p><strong>Selected Date:</strong> {{ selected_date }}</p>
+
+                    <p><strong>Earning:</strong> {{ selected_date_earning }} Tk</p>
+
+                    <p><strong>Medicine Given:</strong> {{ selected_date_medicine_count }}</p>
+
+                    <p class="mb-0">
+                        <strong>0 Tk Prescription:</strong> {{ selected_date_zero_fee_prescription_count }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+            <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    Today Medicine Summary
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        <strong>Total Medicine Given Today:</strong> {{ today_medicine_count }}
+                    </p>
+
+                    <p>
+                        <strong>Not-in-list Medicine Today:</strong> {{ not_in_list_medicines_today|length }}
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Free Prescription Today:</strong> {{ zero_fee_prescription_count }}
+                    </p>
+                </div>
+            </div>
+            </div>
+
+    </div>
+
+    <!-- Today Appointment Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            Today Appointment List
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Serial</th>
+                        <th>Patient</th>
+                        <th>Phone</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for appointment in today_appointments %}
+                    <tr>
+                        <td>{{ appointment.serial_num }}</td>
+                        <td>{{ appointment.patient.name }}</td>
+                        <td>{{ appointment.patient.phone }}</td>
+                        <td>{{ appointment.appointment_date }}</td>
+                        <td>
+                            {% if appointment.status == 'Completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif appointment.status == 'In Visit' %}
+                                <span class="badge bg-primary">In Visit</span>
+                            {% elif appointment.status == 'Cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'patient_details' appointment.patient.id %}" class="btn btn-info btn-sm">
+                                View Patient
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-danger py-3">
+                            No appointment found today.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bottom Insights -->
+    <div class="row">
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    Not-in-list Medicines Today
+                </div>
+
+                <div class="card-body">
+                    {% if not_in_list_medicines_today %}
+                        <ul class="list-group list-group-flush">
+                            {% for item in not_in_list_medicines_today %}
+                                <li class="list-group-item">
+                                    <strong>{{ item.custom_medicine_name }}</strong>
+                                    <br>
+                                    <small>Patient: {{ item.prescription.patient.name }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No not-in-list medicine today.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    
+</div>
+
+{% endblock content %}

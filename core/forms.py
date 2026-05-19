@@ -95,3 +95,22 @@ class PrescriptionItemForm(forms.ModelForm):
             )
 
         return cleaned_data
+    
+
+
+class FeeForm(forms.ModelForm):
+    class Meta:
+        model = models.Fee
+        fields = ['amount', 'note']
+
+        widgets = {
+            'amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter fee amount'
+            }),
+            'note': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Optional note'
+            }),
+        }

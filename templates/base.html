@@ -11,69 +11,102 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Doctor Sayed Ali Rumman</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <a class="navbar-brand" href="{% url 'landing_page' %}">Doctor Sayed Ali Rumman</a>            
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                
 
-                </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                    </li>
-                    
-                    <!--For Register-->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Patient
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'register_patient' %}">Register Patient</a></li>
-                            <li><a class="dropdown-item" href="{% url 'patient_list' %}">Patient List</a></li>
-                            <li><a class="dropdown-item" href="{% url 'patient_search' %}">Patient Search</a></li>
-                            <li><a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a></li>
-                        </ul>
-                    </li>
-                    
-                    <!--For Appointment-->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Appointment
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'patient_search' %}">Register Appointment</a></li>
-                            <li><a class="dropdown-item" href="{% url 'appointment_list' %}">Appointment List</a></li>
-                        </ul>
-                    </li>
+                  {% if user.role != 'receptionist' %}
 
-                    <!--For Medicine-->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Medicine
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'create_medicine' %}">Register Medicine</a></li>
-                            <li><a class="dropdown-item" href="{% url 'medicine_list' %}">Medicine List</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item">
-                    <a class="nav-link disabled" aria-disabled="true" >Disable</a>
-                    </li>
-                    </ul>
-                     
-                {% else %}
-                  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                      <!-- Dashboard -->
                       <li class="nav-item">
-                          <a class="nav-link" href="{% url 'user_login' %}">Login</a>
+                          <a class="nav-link active" href="{% url 'home' %}">Dashboard</a>
                       </li>
-                  </ul>
-                {% endif %}
+
+                      <!-- Patient -->
+                      <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Patient
+                          </a>
+
+                          <ul class="dropdown-menu">
+                              {% if user.role == 'doctor' %}
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'register_patient' %}">Register Patient</a>
+                              </li>
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'patient_list' %}">Patient List</a>
+                              </li>
+                              {% endif %}
+
+                              {% if user.role == 'doctor' or user.role == 'compounder' %}
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'patient_search' %}">Patient Search</a>
+                              </li>
+                              {% endif %}
+                          </ul>
+                      </li>
+
+                      <!-- Appointment -->
+                      {% if user.role == 'doctor' or user.role == 'compounder' %}
+                      <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Appointment
+                          </a>
+
+                          <ul class="dropdown-menu">
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'appointment_list' %}">Appointment List</a>
+                              </li>
+                          </ul>
+                      </li>
+                      {% endif %}
+
+                      <!-- Medicine only Doctor -->
+                      {% if user.role == 'doctor' %}
+                      <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Medicine
+                          </a>
+
+                          <ul class="dropdown-menu">
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'create_medicine' %}">Register Medicine</a>
+                              </li>
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'medicine_list' %}">Medicine List</a>
+                              </li>
+                          </ul>
+                      </li>
+                      {% endif %}
+
+                      <!-- Compounder Queue -->
+                      {% if user.role == 'compounder' %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'compounder_dashboard' %}">Queue</a>
+                      </li>
+                      {% endif %}
+
+                  {% endif %}
+
+                  <!-- Logout: everyone will see -->
+                  <li class="nav-item ms-2 d-flex align-items-center">
+                      <a class="btn btn-outline-danger btn-sm" href="{% url 'user_logout' %}">
+                          Logout
+                      </a>
+                  </li>
+
+              </ul>
+              {% else %}
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'user_login' %}">Login</a>
+                  </li>
+              </ul>
+              {% endif %}
            
             </div>
         </div>

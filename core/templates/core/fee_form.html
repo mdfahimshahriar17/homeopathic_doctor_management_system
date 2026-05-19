@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h1 class="mb-4">Fee Collection</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ patient.name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+            <p><strong>Visit ID:</strong> {{ visit.id }}</p>
+            <p><strong>Prescription ID:</strong> {{ prescription.id }}</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Fee Amount</label>
+            {{ form.amount }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Note</label>
+            {{ form.note }}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Save Fee & Send to Compounder
+        </button>
+
+        <a href="{% url 'create_prescription' visit.id %}" class="btn btn-secondary">
+            Back
+        </a>
+    </form>
+
+</div>
+
+{% endblock content %}

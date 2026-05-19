@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Compounder Dashboard</h1>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Medicine</h5>
+                    <h2 class="text-warning">{{ pending_count }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Today</h5>
+                    <h2 class="text-success">{{ completed_today_count }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Today Cash</h5>
+                    <h2 class="text-primary">{{ today_cash }} Tk</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Queue Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            Medicine Preparation Queue
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Serial</th>
+                        <th>Patient</th>
+                        <th>Patient ID</th>
+                        <th>Fee</th>
+                        <th>Medicine Summary</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for fee in pending_fees %}
+                    <tr>
+                        <td>{{ fee.appointment.serial_num }}</td>
+                        <td>{{ fee.patient.name }}</td>
+                        <td>{{ fee.patient.id }}</td>
+                        <td>{{ fee.amount }} Tk</td>
+
+                        <td>
+                            <ul class="mb-0">
+                                {% for item in fee.prescription.items.all %}
+                                    <li>
+                                        {% if item.medicine %}
+                                            {{ item.medicine.name }}
+                                        {% else %}
+                                            {{ item.custom_medicine_name }}
+                                            <span class="badge bg-warning text-dark">Not in list</span>
+                                        {% endif %}
+
+                                        {% if item.potency %}
+                                            - {{ item.potency }}
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li>No medicine added.</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-primary">
+                                {{ fee.appointment.status }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="{% url 'compounder_prescription_detail' fee.id %}" class="btn btn-info btn-sm">
+                                View Prescription
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-danger py-4">
+                            No medicine preparation pending.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
