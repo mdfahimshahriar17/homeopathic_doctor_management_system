@@ -20,3 +20,14 @@ class AppointmentForm(forms.ModelForm):
         labels = {
             'patient': 'Select Patient'
         }
+
+
+class VisitForm(forms.ModelForm):
+    class Meta:
+        model = models.Visit
+        fields = ['symptoms', 'notes']
+
+        widgets = {
+            'symptoms': forms.Textarea(attrs={'class': 'form-control', 'rows':3}),
+            'notes': forms.Textarea(attrs={'class':'form-control', 'rows':3})
+        }

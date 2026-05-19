@@ -14,10 +14,47 @@
         <li class="list-group-item">Address: {{ patient.address }}</li>
         <li class="list-group-item">Join Date: {{ patient.created_at }}</li>
     </ul>
-    <div class="card-footer text-end">
-        <a class="btn btn-success btn-sm mx-1" href="{% url 'edit_patient' patient.id %}">Edit</a>
-        <a class="btn btn-primary btn-sm mx-1" href="#">Visit</a>
-    </div>
+    
+   <div class="card-footer text-end">
+
+        {% if user.role == 'doctor' %}
+
+            {% if today_appointment %}
+                <a class="btn btn-primary btn-sm mx-1" href="{% url 'create_visit' today_appointment.id %}">
+                    Visit
+                </a>
+            {% else %}
+                <form method="POST" action="{% url 'create_appointment' patient.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-success btn-sm mx-1">
+                        Book Appointment
+                    </button>
+                </form>
+            {% endif %}
+
+            <a class="btn btn-dark btn-sm mx-1" href="{% url 'edit_patient' patient.id %}">
+                Edit
+            </a>
+
+        {% elif user.role == 'compounder' or user.role == 'receptionist' %}
+
+            {% if today_appointment %}
+                <button class="btn btn-secondary btn-sm mx-1" disabled>
+                    Appointed
+                </button>
+            {% else %}
+                <form method="POST" action="{% url 'create_appointment' patient.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-success btn-sm mx-1">
+                        Book Appointment
+                    </button>
+                </form>
+            {% endif %}
+
+        {% endif %}
+
     </div>
 </div>
 {% endblock  %}

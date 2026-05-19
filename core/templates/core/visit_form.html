@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+    <h1 class="mb-4">Start Visit</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ patient.name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+            <p><strong>Serial No:</strong> {{ appointment.serial_num }}</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Symptoms</label>
+            {{ form.symptoms }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Notes</label>
+            {{ form.notes }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Visit</button>
+        <a href="{% url 'appointment_list' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+
+{% endblock content %}

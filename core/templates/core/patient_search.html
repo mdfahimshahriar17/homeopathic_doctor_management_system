@@ -42,13 +42,6 @@
                             <a href="{% url 'patient_details' patient.id %}" class="btn btn-sm btn-info">
                                 View
                             </a>
-
-                            <form method="POST" action="{% url 'create_appointment' patient.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success">
-                                    Book Appointment
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     {% endfor %}

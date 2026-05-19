@@ -36,8 +36,13 @@
                 <td>
                     {% if appointment.status == "Completed" %}
                         <span class="badge bg-success">Completed</span>
+
                     {% elif appointment.status == "Cancelled" %}
                         <span class="badge bg-danger">Cancelled</span>
+
+                    {% elif appointment.status == "In_Visit" %}
+                        <span class="badge bg-primary">In Visit</span>
+
                     {% else %}
                         <span class="badge bg-warning text-dark">Pending</span>
                     {% endif %}
