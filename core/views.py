@@ -223,3 +223,25 @@ def medicine_search(request):
     return render(request, 'core/medicine_search.html', {'query': query, 'medicines': medicines})
 
 
+#for jason search
+@login_required
+def medicine_ajax_search(request):
+    query = request.GET.get('q', '')
+
+    medicines = models.Medicine.objects.filter(
+        name__icontains = query,
+        is_active=True
+    )[:10]
+
+    data = []
+
+    for medicine in medicines:
+        data.append({
+            'id': medicine.id,
+            'name': medicine.name,
+        })
+
+    return JsonResponse({'results':data})
+
+
+
