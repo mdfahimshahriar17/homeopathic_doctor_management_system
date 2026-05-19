@@ -173,26 +173,26 @@ def create_medicine(request):
             medicine = form.save(commit=False)
             medicine.created_by = request.user
             medicine.save()
-            return redirect('medicine_details')
+            return redirect('medicine_details', medicine.id)
         
     else:
         form = forms.MedicineForm()
 
     return render(request, 'core/created_and_edit_medicine.html', {'form' : form})
 
-
+@login_required
 def medicine_details(request, id):
     medicine = get_object_or_404(models.Medicine, id=id)
-    return render (request, 'core/medicine_details.html')
+    return render (request, 'core/medicine_details.html', {'medicine':medicine})
 
 
-
+@login_required
 def medicine_list(request):
     medicines = models.Medicine.objects.all()
 
     return render(request, 'core/medicine_list.html', {'medicines':medicines})
 
-
+@login_required
 def medicine_edit(request, id):
     medicine = get_object_or_404(models.Medicine, id=id)
     form = forms.MedicineForm(instance=medicine) #medicine previous data will show in form
@@ -205,18 +205,18 @@ def medicine_edit(request, id):
     
     return render(request, 'core/created_and_edit_medicine.html', {'form':form})
 
-
+@login_required
 def medicine_search(request):
     query = request.GET.get('q', '')
     medicines = []
 
     if query:
         medicines = models.Medicine.objects.filter(
-            Q(name__incontains=query) |
-            Q(description__incontains=query)
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
         )
 
         if query.isdigit():
             medicines = medicines | models.Medicine.objects.filter(id=query)
     
-    return render(request, 'core/medicine_search', {'query': query, 'medicines': medicines})
+    return render(request, 'core/medicine_search.html', {'query': query, 'medicines': medicines})

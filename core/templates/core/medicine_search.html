@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+    <h1 class="mb-4">Medicine Search</h1>
+
+    <form method="GET" class="d-flex mb-4">
+        <input 
+            type="text" 
+            name="q" 
+            class="form-control me-2" 
+            placeholder="Search by name, Description or Medicine ID"
+            value="{{ query|default:'' }}"
+        >
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if query %}
+        <h5>Search result for: {{ query }}</h5>
+
+        {% if medicines %}
+            <table class="table table-bordered table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Registerd Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr>
+                        <td>{{ medicine.id }}</td>
+                        <td>{{ medicine.name }}</td>
+                        <td>{{ medicine.created_at }}</td>
+                        <td>
+                            <a href="{% url 'medicine_details' medicine.id %}" class="btn btn-sm btn-info">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-danger mt-3">No medicine found.</p>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% endblock content %}
