@@ -49,4 +49,17 @@ class Visit(models.Model):
 
     def __str__(self):
         return f"Visit - {self.patient.name} - {self.created_at}"
-    
+
+
+
+
+class Medicine(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
