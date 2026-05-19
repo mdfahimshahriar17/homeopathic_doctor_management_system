@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h1 class="mb-4">Prescription</h1>
+
+    <!-- Patient Info -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ patient.name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+            <p><strong>Visit ID:</strong> {{ visit.id }}</p>
+            <p><strong>Appointment Serial:</strong> {{ visit.appointment.serial_num }}</p>
+        </div>
+    </div>
+
+    <!-- Add Medicine Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            Add Medicine
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                {{ form.medicine_id }}
+
+                <div class="mb-3 position-relative">
+                    <label class="form-label">Search Medicine</label>
+                    {{ form.medicine_search }}
+
+                    <div id="medicine-results" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Custom Medicine Name</label>
+                    {{ form.custom_medicine_name }}
+                    <small class="text-muted">
+                        If medicine is not found in list, write medicine name here.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Potency</label>
+                    {{ form.potency }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Dosage</label>
+                    {{ form.dosage }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Duration</label>
+                    {{ form.duration }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Instruction</label>
+                    {{ form.instruction }}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Add Medicine
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Added Medicine List -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            Added Medicine List
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Potency</th>
+                        <th>Dosage</th>
+                        <th>Duration</th>
+                        <th>Instruction</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {% if item.medicine %}
+                                {{ item.medicine.name }}
+                            {% else %}
+                                {{ item.custom_medicine_name }}
+                                <span class="badge bg-warning text-dark">Not in stock/list</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.potency }}</td>
+                        <td>{{ item.dosage }}</td>
+                        <td>{{ item.duration }}</td>
+                        <td>{{ item.instruction }}</td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-3">
+                            No medicine added yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <a href="#" class="btn btn-primary">
+            Finish Prescription & Go to Fee
+        </a>
+    </div>
+
+</div>
+
+
+<script>
+    const searchInput = document.getElementById("id_medicine_search");
+    const medicineIdInput = document.getElementById("id_medicine_id");
+    const customMedicineInput = document.getElementById("id_custom_medicine_name");
+    const resultBox = document.getElementById("medicine-results");
+
+    searchInput.addEventListener("keyup", function () {
+        const query = searchInput.value.trim();
+
+        medicineIdInput.value = "";
+
+        if (query.length < 2) {
+            resultBox.innerHTML = "";
+            return;
+        }
+
+        fetch("{% url 'medicine_ajax_search' %}?q=" + query)
+            .then(response => response.json())
+            .then(data => {
+                resultBox.innerHTML = "";
+
+                if (data.results.length === 0) {
+                    resultBox.innerHTML = `
+                        <div class="list-group-item text-muted">
+                            No medicine found. Use custom medicine field.
+                        </div>
+                    `;
+                    return;
+                }
+
+                data.results.forEach(function (medicine) {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.textContent = medicine.name;
+
+                    item.addEventListener("click", function () {
+                        searchInput.value = medicine.name;
+                        medicineIdInput.value = medicine.id;
+                        customMedicineInput.value = "";
+                        resultBox.innerHTML = "";
+                    });
+
+                    resultBox.appendChild(item);
+                });
+            });
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!resultBox.contains(event.target) && event.target !== searchInput) {
+            resultBox.innerHTML = "";
+        }
+    });
+</script>
+
+{% endblock content %}

@@ -141,7 +141,7 @@ def create_visit(request, id):
     existing_visit = models.Visit.objects.filter(appointment=appointment).first()
 
     if existing_visit:
-        return redirect('patient_details', id=appointment.patient.id)
+        return redirect('create_prescription', id=existing_visit.id)
     
     if appointment.status == 'Pending':
         appointment.status = 'In_Visit'
@@ -157,14 +157,15 @@ def create_visit(request, id):
             visit.created_by = request.user
             visit.save()
 
-            return redirect('patient_details', id=appointment.patient.id)
-        
+        return redirect('create_prescription', id=visit.id)        
     else:
         form = forms.VisitForm()
         
     return render(request, 'core/visit_form.html', {'form': form, 'appointment': appointment, 'patient': appointment.patient})
 
 
+
+# Medicine CRUD
 
 @login_required
 def create_medicine(request):
@@ -245,3 +246,56 @@ def medicine_ajax_search(request):
 
 
 
+@login_required
+def create_prescription(request, id):
+    visit = get_object_or_404(models.Visit, id=id)
+
+    prescription, created = models.Prescription.objects.get_or_create(
+        visit=visit,
+        defaults={
+            'patient': visit.patient,
+            'appointment': visit.appointment,
+            'created_by': request.user,
+        }
+    )
+
+    if request.method == 'POST':
+        form = forms.PrescriptionItemForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.prescription = prescription
+
+            medicine_id = form.cleaned_data.get('medicine_id')
+            custom_medicine_name = form.cleaned_data.get('custom_medicine_name')
+
+            if medicine_id:
+                medicine = get_object_or_404(
+                    models.Medicine,
+                    id=medicine_id,
+                    is_active=True
+                )
+                item.medicine = medicine
+                item.custom_medicine_name = None
+            else:
+                item.medicine = None
+                item.custom_medicine_name = custom_medicine_name
+
+            item.save()
+
+            return redirect('create_prescription', id=visit.id)
+
+    else:
+        form = forms.PrescriptionItemForm()
+
+    items = models.PrescriptionItem.objects.filter(
+        prescription=prescription
+    )
+
+    return render(request, 'core/prescription_form.html', {
+        'visit': visit,
+        'patient': visit.patient,
+        'prescription': prescription,
+        'form': form,
+        'items': items,
+    })
