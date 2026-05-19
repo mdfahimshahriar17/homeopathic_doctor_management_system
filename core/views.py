@@ -177,4 +177,10 @@ def create_medicine(request):
     else:
         form = forms.MedicineForm()
 
-    return render(request, "created_and_edit_medicine", {'form' : form})
+    return render(request, 'core/created_and_edit_medicine', {'form' : form})
+
+
+def medicine_details(request, id):
+    medicine = get_object_or_404(models.Medicine, id=id)
+    return render (request, 'core/medicine_details.html')
+
