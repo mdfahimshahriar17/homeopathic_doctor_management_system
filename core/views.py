@@ -162,3 +162,19 @@ def create_visit(request, id):
         form = forms.VisitForm()
         
     return render(request, 'core/visit_form.html', {'form': form, 'appointment': appointment, 'patient': appointment.patient})
+
+
+
+def create_medicine(request):
+    if request.method == 'POST':
+        form = forms.MedicineForm(request.POST)
+        if form.is_valid():
+            medicine = form.save(commit=False)
+            medicine.created_by = request.user
+            medicine.save()
+            return redirect('medicine_details')
+        
+    else:
+        form = forms.MedicineForm()
+
+    return render(request, "created_and_edit_medicine", {'form' : form})
