@@ -784,7 +784,6 @@ Add:
 Capture:
 - Medicine search
 - Medicine names
-- Edit/delete options
 
 ---
 
