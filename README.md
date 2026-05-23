@@ -543,9 +543,7 @@ screenshots/login-page.png
 
 Add:
 
-```markdown
 ![Login Page](screenshots/login-page.png)
-```
 
 Capture:
 - Username field
@@ -562,9 +560,7 @@ screenshots/doctor-dashboard.png
 
 Add:
 
-```markdown
 ![Doctor Dashboard](screenshots/doctor-dashboard.png)
-```
 
 Capture:
 - Total patients
@@ -584,9 +580,7 @@ screenshots/receptionist-dashboard.png
 
 Add:
 
-```markdown
 ![Receptionist Dashboard](screenshots/receptionist-dashboard.png)
-```
 
 Capture:
 - Register Patient button
@@ -603,9 +597,7 @@ screenshots/compounder-dashboard.png
 
 Add:
 
-```markdown
 ![Compounder Dashboard](screenshots/compounder-dashboard.png)
-```
 
 Capture:
 - Pending medicine queue
@@ -623,9 +615,7 @@ screenshots/patient-search.png
 
 Add:
 
-```markdown
 ![Patient Search](screenshots/patient-search.png)
-```
 
 Capture:
 - Search bar
@@ -643,9 +633,7 @@ screenshots/patient-details-history.png
 
 Add:
 
-```markdown
 ![Patient Details](screenshots/patient-details-history.png)
-```
 
 Capture using Doctor account:
 - Patient basic information
@@ -665,9 +653,7 @@ screenshots/appointment-list.png
 
 Add:
 
-```markdown
 ![Appointment List](screenshots/appointment-list.png)
-```
 
 Capture:
 - Serial number
@@ -687,9 +673,7 @@ screenshots/visit-form.png
 
 Add:
 
-```markdown
 ![Visit Form](screenshots/visit-form.png)
-```
 
 Capture:
 - Patient information
@@ -707,9 +691,7 @@ screenshots/prescription-form.png
 
 Add:
 
-```markdown
 ![Prescription Form](screenshots/prescription-form.png)
-```
 
 Capture:
 - Medicine search field
@@ -730,9 +712,7 @@ screenshots/fee-form.png
 
 Add:
 
-```markdown
 ![Fee Form](screenshots/fee-form.png)
-```
 
 Capture:
 - Patient details
@@ -751,9 +731,7 @@ screenshots/compounder-prescription-detail.png
 
 Add:
 
-```markdown
 ![Compounder Prescription Detail](screenshots/compounder-prescription-detail.png)
-```
 
 Capture:
 - Patient name
@@ -773,9 +751,7 @@ screenshots/medicine-list.png
 
 Add:
 
-```markdown
 ![Medicine List](screenshots/medicine-list.png)
-```
 
 Capture:
 - Medicine search
