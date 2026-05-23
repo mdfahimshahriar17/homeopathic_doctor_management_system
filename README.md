@@ -6,7 +6,7 @@ A Django-based clinic management system for managing a homeopathic doctor chambe
 
 ## Project Overview
 
-This project is designed for a small doctor chamber where different staff members have different responsibilities.
+This project was developed to streamline daily operations in a homeopathic clinic through role-based workflow management.
 
 The system supports three main user roles:
 
@@ -267,7 +267,7 @@ homeopathic_doctor_management_system/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/homeopathic_doctor_management_system.git
+git clone https://github.com/mdfahimshahriar17/homeopathic_doctor_management_system.git
 cd homeopathic_doctor_management_system
 ```
 
@@ -341,9 +341,6 @@ doctor
 receptionist
 compounder
 ```
-
-If role values are saved as `Doctor`, `Receptionist`, or `Compounder`, update template and view conditions accordingly.
-
 ---
 
 ## Main Workflow
@@ -511,14 +508,6 @@ Stores fee and payment information:
 
 ## Screenshot Section
 
-Create a folder named:
-
-```text
-screenshots/
-```
-
-Add these screenshots:
-
 ### 1. Landing Page
 
 ![Landing Page](screenshots/landing-page.png)
@@ -657,48 +646,6 @@ Capture:
 
 ---
 
-## Screenshots
-
-### Landing Page
-![Landing Page](screenshots/landing-page.png)
-
-### Login Page
-![Login Page](screenshots/login-page.png)
-
-### Doctor Dashboard
-![Doctor Dashboard](screenshots/doctor-dashboard.png)
-
-### Receptionist Dashboard
-![Receptionist Dashboard](screenshots/receptionist-dashboard.png)
-
-### Compounder Dashboard
-![Compounder Dashboard](screenshots/compounder-dashboard.png)
-
-### Patient Search
-![Patient Search](screenshots/patient-search.png)
-
-### Patient Details with Medical History
-![Patient Details](screenshots/patient-details-history.png)
-
-### Appointment List
-![Appointment List](screenshots/appointment-list.png)
-
-### Visit Form
-![Visit Form](screenshots/visit-form.png)
-
-### Prescription Form
-![Prescription Form](screenshots/prescription-form.png)
-
-### Fee Form
-![Fee Form](screenshots/fee-form.png)
-
-### Compounder Prescription Detail
-![Compounder Prescription Detail](screenshots/compounder-prescription-detail.png)
-
-### Medicine List
-![Medicine List](screenshots/medicine-list.png)
-
----
 
 ## Git Ignore
 
@@ -747,8 +694,7 @@ git push
 
 ---
 
-## Developer Note
 
-This project is created for learning and real clinic workflow practice. It uses Django, Bootstrap, SQLite, AJAX, and role-based logic to manage a homeopathic doctor chamber.
+## Author
 
-The project is still under active development.
+Developed by Md Fahim Shahriar
