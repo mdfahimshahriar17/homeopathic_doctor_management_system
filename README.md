@@ -523,15 +523,11 @@ Add these screenshots:
 
 File name:
 
-```text
 screenshots/landing-page.png
-```
 
 Add:
-
-```markdown
 ![Landing Page](screenshots/landing-page.png)
-```
+
 
 Capture:
 - Public doctor image page
@@ -791,7 +787,7 @@ Capture:
 
 After adding screenshots, use this section:
 
-```markdown
+
 ### Landing Page
 ![Landing Page](screenshots/landing-page.png)
 
@@ -830,7 +826,6 @@ After adding screenshots, use this section:
 
 ### Medicine List
 ![Medicine List](screenshots/medicine-list.png)
-```
 
 ---
 
