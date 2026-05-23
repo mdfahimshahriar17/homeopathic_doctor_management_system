@@ -521,27 +521,13 @@ Add these screenshots:
 
 ### 1. Landing Page
 
-File name:
-
-screenshots/landing-page.png
-
-Add:
 ![Landing Page](screenshots/landing-page.png)
-
 
 Capture:
 - Public doctor image page
 - Login button visible
 
 ### 2. Login Page
-
-File name:
-
-```text
-screenshots/login-page.png
-```
-
-Add:
 
 ![Login Page](screenshots/login-page.png)
 
@@ -551,14 +537,6 @@ Capture:
 - Submit button
 
 ### 3. Doctor Dashboard
-
-File name:
-
-```text
-screenshots/doctor-dashboard.png
-```
-
-Add:
 
 ![Doctor Dashboard](screenshots/doctor-dashboard.png)
 
@@ -572,14 +550,6 @@ Capture:
 
 ### 4. Receptionist Dashboard
 
-File name:
-
-```text
-screenshots/receptionist-dashboard.png
-```
-
-Add:
-
 ![Receptionist Dashboard](screenshots/receptionist-dashboard.png)
 
 Capture:
@@ -588,14 +558,6 @@ Capture:
 - Today appointment serial list
 
 ### 5. Compounder Dashboard
-
-File name:
-
-```text
-screenshots/compounder-dashboard.png
-```
-
-Add:
 
 ![Compounder Dashboard](screenshots/compounder-dashboard.png)
 
@@ -607,14 +569,6 @@ Capture:
 
 ### 6. Patient Search
 
-File name:
-
-```text
-screenshots/patient-search.png
-```
-
-Add:
-
 ![Patient Search](screenshots/patient-search.png)
 
 Capture:
@@ -624,14 +578,6 @@ Capture:
 - Book appointment button
 
 ### 7. Patient Details with History
-
-File name:
-
-```text
-screenshots/patient-details-history.png
-```
-
-Add:
 
 ![Patient Details](screenshots/patient-details-history.png)
 
@@ -645,14 +591,6 @@ Capture using Doctor account:
 
 ### 8. Appointment List
 
-File name:
-
-```text
-screenshots/appointment-list.png
-```
-
-Add:
-
 ![Appointment List](screenshots/appointment-list.png)
 
 Capture:
@@ -665,14 +603,6 @@ Capture:
 
 ### 9. Visit Form
 
-File name:
-
-```text
-screenshots/visit-form.png
-```
-
-Add:
-
 ![Visit Form](screenshots/visit-form.png)
 
 Capture:
@@ -682,14 +612,6 @@ Capture:
 - Save Visit button
 
 ### 10. Prescription Form
-
-File name:
-
-```text
-screenshots/prescription-form.png
-```
-
-Add:
 
 ![Prescription Form](screenshots/prescription-form.png)
 
@@ -704,14 +626,6 @@ Capture:
 
 ### 11. Fee Form
 
-File name:
-
-```text
-screenshots/fee-form.png
-```
-
-Add:
-
 ![Fee Form](screenshots/fee-form.png)
 
 Capture:
@@ -722,14 +636,6 @@ Capture:
 - Save Fee button
 
 ### 12. Compounder Prescription Detail
-
-File name:
-
-```text
-screenshots/compounder-prescription-detail.png
-```
-
-Add:
 
 ![Compounder Prescription Detail](screenshots/compounder-prescription-detail.png)
 
@@ -743,14 +649,6 @@ Capture:
 
 ### 13. Medicine List
 
-File name:
-
-```text
-screenshots/medicine-list.png
-```
-
-Add:
-
 ![Medicine List](screenshots/medicine-list.png)
 
 Capture:
@@ -760,9 +658,6 @@ Capture:
 ---
 
 ## Screenshots
-
-After adding screenshots, use this section:
-
 
 ### Landing Page
 ![Landing Page](screenshots/landing-page.png)
